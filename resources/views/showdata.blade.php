@@ -52,7 +52,22 @@
 <body style="margin:0%">
     
     <div class="container" style="max-height: 100%;max-width:100%;">
-        <h2>Average per Season</h2>
+        <h2>Analysis of Imported Excel</h2>
+            @if(Session::has('error'))
+                <div class="alert alert-danger">
+                    {{ Session::get('error') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         <form method="GET" action="{{ route('showData', ['identifier' => request()->route('identifier')]) }}">
             <div class="row">
                 <div class="mb-3 col-md-3">
