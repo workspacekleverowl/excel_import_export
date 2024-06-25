@@ -11,11 +11,11 @@
 
 @section('content')
 <head>
-    <title>Laravel Excel Import</title>
+    <title>Excel Import</title>
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="mb-4">Laravel Excel Import</h2>
+    <h2 class="mb-4">Excel Import</h2>
     @if(Session::has('error'))
     <div class="alert alert-danger">
         {{ Session::get('error') }}
@@ -38,7 +38,7 @@
             <label for="file">Upload Excel File</label>
             <input type="file" class="form-control" name="file" required>
         </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <button style="margin-top: 2%" type="submit" class="btn btn-primary ">Upload</button>
     </form>
     
 </div>

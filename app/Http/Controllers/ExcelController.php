@@ -101,18 +101,18 @@ public function showData(Request $request, $identifier)
     $clusters = DB::table('excel')->distinct()->pluck('Cluster');
     $subBrands = DB::table('excel')->distinct()->pluck('sub_brand');
 
-    return view('showdata', compact('data', 'seasons', 'categories', 'clusters', 'subBrands'));
+    return view('showdata', compact('data', 'seasons', 'categories', 'clusters', 'subBrands','identifier'));
 }
 
 
-public function export(Request $request)
+public function export(Request $request,$identifier)
 {
     $exportData = json_decode($request->input('exportData'), true);
 
     // Check if there's exported data
     if (!empty($exportData)) {
         return Excel::download(new ExcelExport($exportData), 'filtered_data.xlsx');
-        
+       //ExcelData::where('identifier', $identifier)->delete();
     } else {
         return redirect()->back()->with('error', 'No data to export.');
     }

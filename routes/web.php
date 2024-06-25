@@ -36,7 +36,7 @@ Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang'
 
 Route::get('/indexexcel', [ExcelController::class, 'index'])->name('indexexcel'); // view
 Route::post('/import', [ExcelController::class, 'import'])->name('import');
-Route::post('/export-excel', [ExcelController::class, 'export'])->name('export-excel');
+Route::post('/export-excel/{identifier}', [ExcelController::class, 'export'])->name('export-excel');
 Route::get('/averages/{identifier}', [ExcelController::class, 'showData'])->name('showData');
 
 // //--------------------role--------------------------------------------------------

@@ -31,10 +31,27 @@
             });
         });
     </script>
+    <style>
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        
+        .download-button-container {
+            position: relative;
+            height: 50px;
+        }
+        .download-button-container button {
+            position: absolute;
+            bottom: 0px;
+            right: 10px;
+        }
+    </style>
 </head>
-<body>
+<body style="margin:0%">
     
-    <div class="container">
+    <div class="container" style="max-height: 100%;max-width:100%;">
         <h2>Average per Season</h2>
         <form method="GET" action="<?php echo e(route('showData', ['identifier' => request()->route('identifier')])); ?>">
             <div class="row">
@@ -89,36 +106,41 @@
             <button type="submit" class="btn btn-primary mb-3">Filter</button>
         </form>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Season</th>
-                    <th>Sum of Ordered Quantity</th>
-                    <th>Fabric Cost per GMT</th>
-                    <th>Trim Cost</th>
-                    <th>FOB</th>
-                    <th>MRP</th>
-                </tr>
-            </thead>
-            <tbody id="dataTable">
-                <?php $__currentLoopData = $data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <td><?php echo e($row->season); ?></td>
-                        <td><?php echo e($row->Sum_quantity); ?></td>
-                        <td><?php echo e($row->Fabric_Cost_per_GMT); ?></td>
-                        <td><?php echo e($row->trim_cost); ?></td>
-                        <td><?php echo e($row->fob); ?></td>
-                        <td><?php echo e($row->mrp); ?></td>
+                        <th>Season</th>
+                        <th>Sum of Ordered Quantity</th>
+                        <th>Fabric Cost per GMT</th>
+                        <th>Trim Cost</th>
+                        <th>FOB</th>
+                        <th>MRP</th>
                     </tr>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="dataTable">
+                    <?php $__currentLoopData = $data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <tr>
+                            <td><?php echo e($row->season); ?></td>
+                            <td><?php echo e($row->Sum_quantity); ?></td>
+                            <td><?php echo e($row->Fabric_Cost_per_GMT); ?></td>
+                            <td><?php echo e($row->trim_cost); ?></td>
+                            <td><?php echo e($row->fob); ?></td>
+                            <td><?php echo e($row->mrp); ?></td>
+                        </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tbody>
+            </table>
+        </div>
 
-        <form id="exportForm" action="<?php echo e(route('export-excel')); ?>" method="POST">
-            <?php echo csrf_field(); ?>
-            <input type="hidden" name="exportData" id="exportData">
-            <button style="float: right;" type="submit" class="btn btn-success">Download Excel</button>
-        </form>
+        
+        <div class="download-button-container">
+            <form id="exportForm" action="<?php echo e(route('export-excel',$identifier)); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="exportData" id="exportData">
+                <button type="submit" class="btn btn-success">Download Excel</button>
+            </form>
+        </div>
     </div>
 </body>
 <?php $__env->stopSection(); ?>

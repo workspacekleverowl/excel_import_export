@@ -31,10 +31,27 @@
             });
         });
     </script>
+    <style>
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        
+        .download-button-container {
+            position: relative;
+            height: 50px;
+        }
+        .download-button-container button {
+            position: absolute;
+            bottom: 0px;
+            right: 10px;
+        }
+    </style>
 </head>
-<body>
+<body style="margin:0%">
     
-    <div class="container">
+    <div class="container" style="max-height: 100%;max-width:100%;">
         <h2>Average per Season</h2>
         <form method="GET" action="{{ route('showData', ['identifier' => request()->route('identifier')]) }}">
             <div class="row">
@@ -89,36 +106,41 @@
             <button type="submit" class="btn btn-primary mb-3">Filter</button>
         </form>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Season</th>
-                    <th>Sum of Ordered Quantity</th>
-                    <th>Fabric Cost per GMT</th>
-                    <th>Trim Cost</th>
-                    <th>FOB</th>
-                    <th>MRP</th>
-                </tr>
-            </thead>
-            <tbody id="dataTable">
-                @foreach($data as $row)
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <td>{{ $row->season }}</td>
-                        <td>{{ $row->Sum_quantity }}</td>
-                        <td>{{ $row->Fabric_Cost_per_GMT }}</td>
-                        <td>{{ $row->trim_cost }}</td>
-                        <td>{{ $row->fob }}</td>
-                        <td>{{ $row->mrp }}</td>
+                        <th>Season</th>
+                        <th>Sum of Ordered Quantity</th>
+                        <th>Fabric Cost per GMT</th>
+                        <th>Trim Cost</th>
+                        <th>FOB</th>
+                        <th>MRP</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="dataTable">
+                    @foreach($data as $row)
+                        <tr>
+                            <td>{{ $row->season }}</td>
+                            <td>{{ $row->Sum_quantity }}</td>
+                            <td>{{ $row->Fabric_Cost_per_GMT }}</td>
+                            <td>{{ $row->trim_cost }}</td>
+                            <td>{{ $row->fob }}</td>
+                            <td>{{ $row->mrp }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-        <form id="exportForm" action="{{ route('export-excel') }}" method="POST">
-            @csrf
-            <input type="hidden" name="exportData" id="exportData">
-            <button style="float: right;" type="submit" class="btn btn-success">Download Excel</button>
-        </form>
+        
+        <div class="download-button-container">
+            <form id="exportForm" action="{{ route('export-excel',$identifier) }}" method="POST">
+                @csrf
+                <input type="hidden" name="exportData" id="exportData">
+                <button type="submit" class="btn btn-success">Download Excel</button>
+            </form>
+        </div>
     </div>
 </body>
 @endsection
