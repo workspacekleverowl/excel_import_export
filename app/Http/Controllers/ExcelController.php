@@ -28,8 +28,18 @@ class ExcelController extends Controller
         $user = auth()->user();
         $uniqueString = Str::slug($user->name . '_' . uniqid());
 
-        // Import the Excel file with the unique identifier
-        Excel::import(new ExcelImport($uniqueString), $request->file('file'));
+        try {
+            // Import the Excel file with the unique identifier
+            Excel::import(new ExcelImport($uniqueString), $request->file('file'));
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            // This will catch validation errors (e.g., header mismatch)
+            $failures = $e->failures();
+            // Redirect back with error message
+            return redirect()->back()->withErrors(['file' => 'The headers in the uploaded file do not match the expected format.']);
+        } catch (\Exception $e) {
+            // General exception handling
+            return redirect()->back()->withErrors(['file' => 'An error occurred during file upload. Please try again with different file.']);
+        }
 
         // Redirect to a route that shows the averages
         return redirect()->route('showData', ['identifier' => $uniqueString]);
@@ -45,25 +55,51 @@ class ExcelController extends Controller
 
     
 
-    
 
-public function showData($identifier)
+public function showData(Request $request, $identifier)
 {
-    $data = ExcelData::where('identifier', $identifier)
-        ->select('season', 
-        DB::raw('SUM(order_quantity) as Sum_quantity'), 
-        DB::raw('AVG(fabric_cost_per_gmt) as Fabric_Cost_per_GMT'),
-        DB::raw('AVG(trim_cost) as trim_cost'), 
-        DB::raw('AVG(fob) as fob'), 
-        DB::raw('AVG(mrp) as mrp'),)
-        ->groupBy('season')
-        ->get();
+    // Retrieve filter values from request, default to null
+    $season = $request->input('season', null);
+    $category = $request->input('category', null);
+    $cluster = $request->input('cluster', null);
+    $subBrand = $request->input('sub_brand', null);
+
+    // Build the query
+    $query = DB::table('excel')
+        ->select(
+            DB::raw('COALESCE(season, "") as season'), // Ensure season is always present, even if null
+            DB::raw('SUM(order_quantity) as Sum_quantity'), 
+            DB::raw('AVG(fabric_cost_per_gmt) as Fabric_Cost_per_GMT'),
+            DB::raw('AVG(trim_cost) as trim_cost'), 
+            DB::raw('AVG(fob) as fob'), 
+            DB::raw('AVG(mrp) as mrp')
+        )->where('identifier',$identifier);
+
+    // Apply filters if selected
+    if (!is_null($season)) {
+        $query->where('season', $season);
+    }
+    if (!is_null($category)) {
+        $query->where('Category', $category);
+    }
+    if (!is_null($cluster)) {
+        $query->where('Cluster', $cluster);
+    }
+    if (!is_null($subBrand)) {
+        $query->where('sub_brand', $subBrand);
+    }
+
+    // Ensure the query uses GROUP BY to allow aggregates to work
+    $query->groupBy(DB::raw('COALESCE(season, "")'));
+
+    // Get the data
+    $data = $query->get();
 
     // Get unique filter values
-    $seasons = ExcelData::where('identifier', $identifier)->distinct()->pluck('season');
-    $categories = ExcelData::where('identifier', $identifier)->distinct()->pluck('category');
-    $clusters = ExcelData::where('identifier', $identifier)->distinct()->pluck('cluster');
-    $subBrands = ExcelData::where('identifier', $identifier)->distinct()->pluck('sub_brand');
+    $seasons = DB::table('excel')->distinct()->pluck('season');
+    $categories = DB::table('excel')->distinct()->pluck('Category');
+    $clusters = DB::table('excel')->distinct()->pluck('Cluster');
+    $subBrands = DB::table('excel')->distinct()->pluck('sub_brand');
 
     return view('showdata', compact('data', 'seasons', 'categories', 'clusters', 'subBrands'));
 }
@@ -76,6 +112,7 @@ public function export(Request $request)
     // Check if there's exported data
     if (!empty($exportData)) {
         return Excel::download(new ExcelExport($exportData), 'filtered_data.xlsx');
+        
     } else {
         return redirect()->back()->with('error', 'No data to export.');
     }

@@ -9,32 +9,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function(){
-            function filterTable() {
-                var seasonFilter = $("#seasonFilter").val().toLowerCase();
-                var categoryFilter = $("#categoryFilter").val().toLowerCase();
-                var clusterFilter = $("#clusterFilter").val().toLowerCase();
-                var subBrandFilter = $("#subBrandFilter").val().toLowerCase();
-
-                $("#dataTable tr").each(function() {
-                    var row = $(this);
-                    var seasonText = row.find("td:nth-child(1)").text().toLowerCase();
-                    var categoryText = row.find("td:nth-child(2)").text().toLowerCase();
-                    var clusterText = row.find("td:nth-child(3)").text().toLowerCase();
-                    var subBrandText = row.find("td:nth-child(4)").text().toLowerCase();
-
-                    var seasonMatch = seasonFilter === "" || seasonText.indexOf(seasonFilter) > -1;
-                    var categoryMatch = categoryFilter === "" || categoryText.indexOf(categoryFilter) > -1;
-                    var clusterMatch = clusterFilter === "" || clusterText.indexOf(clusterFilter) > -1;
-                    var subBrandMatch = subBrandFilter === "" || subBrandText.indexOf(subBrandFilter) > -1;
-
-                    if (seasonMatch && categoryMatch && clusterMatch && subBrandMatch) {
-                        row.show();
-                    } else {
-                        row.hide();
-                    }
-                });
-            }
-
             function collectFilteredData() {
                 var filteredData = [];
                 $("#dataTable tr:visible").each(function() {
@@ -52,10 +26,6 @@
                 $("#exportData").val(JSON.stringify(filteredData));
             }
 
-            $("#seasonFilter, #categoryFilter, #clusterFilter, #subBrandFilter").on("change keyup", function() {
-                filterTable();
-            });
-
             $("#exportForm").on("submit", function() {
                 collectFilteredData();
             });
@@ -63,58 +33,62 @@
     </script>
 </head>
 <body>
+    
     <div class="container">
         <h2>Average per Season</h2>
-        <div class="row">
-            <div class="mb-3 col-md-3">
-                <div class="form-group">
-                    <label for="seasonFilter">Season:</label>
-                    <select id="seasonFilter" class="form-control">
-                        <option value="">All</option>
-                        <?php $__currentLoopData = $seasons; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $season): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($season); ?>"><?php echo e($season); ?></option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
+        <form method="GET" action="<?php echo e(route('showData', ['identifier' => request()->route('identifier')])); ?>">
+            <div class="row">
+                <div class="mb-3 col-md-3">
+                    <div class="form-group">
+                        <label for="seasonFilter">Season:</label>
+                        <select id="seasonFilter" name="season" class="form-control">
+                            <option value="">All</option>
+                            <?php $__currentLoopData = $seasons; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $season): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($season); ?>" <?php echo e(request('season') == $season ? 'selected' : ''); ?>><?php echo e($season); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-3 col-md-3">
-                <div class="form-group">
-                    <label for="categoryFilter">Category:</label>
-                    <select id="categoryFilter" class="form-control">
-                        <option value="">All</option>
-                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($category); ?>"><?php echo e($category); ?></option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
+                <div class="mb-3 col-md-3">
+                    <div class="form-group">
+                        <label for="categoryFilter">Category:</label>
+                        <select id="categoryFilter" name="category" class="form-control">
+                            <option value="">All</option>
+                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($category); ?>" <?php echo e(request('category') == $category ? 'selected' : ''); ?>><?php echo e($category); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-3 col-md-3">
-                <div class="form-group">
-                    <label for="clusterFilter">Cluster:</label>
-                    <select id="clusterFilter" class="form-control">
-                        <option value="">All</option>
-                        <?php $__currentLoopData = $clusters; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cluster): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($cluster); ?>"><?php echo e($cluster); ?></option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
+                <div class="mb-3 col-md-3">
+                    <div class="form-group">
+                        <label for="clusterFilter">Cluster:</label>
+                        <select id="clusterFilter" name="cluster" class="form-control">
+                            <option value="">All</option>
+                            <?php $__currentLoopData = $clusters; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cluster): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($cluster); ?>" <?php echo e(request('cluster') == $cluster ? 'selected' : ''); ?>><?php echo e($cluster); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-3 col-md-3">
-                <div class="form-group">
-                    <label for="subBrandFilter">Sub-brand:</label>
-                    <select id="subBrandFilter" class="form-control">
-                        <option value="">All</option>
-                        <?php $__currentLoopData = $subBrands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subBrand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($subBrand); ?>"><?php echo e($subBrand); ?></option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
+                <div class="mb-3 col-md-3">
+                    <div class="form-group">
+                        <label for="subBrandFilter">Sub-brand:</label>
+                        <select id="subBrandFilter" name="sub_brand" class="form-control">
+                            <option value="">All</option>
+                            <?php $__currentLoopData = $subBrands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subBrand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($subBrand); ?>" <?php echo e(request('sub_brand') == $subBrand ? 'selected' : ''); ?>><?php echo e($subBrand); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                    </div>
                 </div>
             </div>
-        </div>
-        
+            <button type="submit" class="btn btn-primary mb-3">Filter</button>
+        </form>
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -139,10 +113,11 @@
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
         </table>
+
         <form id="exportForm" action="<?php echo e(route('export-excel')); ?>" method="POST">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="exportData" id="exportData">
-            <button type="submit" class="btn btn-success">Download Excel</button>
+            <button style="float: right;" type="submit" class="btn btn-success">Download Excel</button>
         </form>
     </div>
 </body>
