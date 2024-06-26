@@ -30,6 +30,15 @@
                 collectFilteredData();
             });
         });
+
+
+        function triggerExportAndRedirect() {
+            
+            // Listen for the download to complete then redirect
+            setTimeout(() => {
+                window.location.href = '{{ route("indexexcel") }}';
+            }, 5000); // Adjust the timeout as needed
+        }
     </script>
     <style>
         .table-container {
@@ -153,7 +162,7 @@
             <form id="exportForm" action="{{ route('export-excel',$identifier) }}" method="POST">
                 @csrf
                 <input type="hidden" name="exportData" id="exportData">
-                <button type="submit" class="btn btn-success">Download Excel</button>
+                <button type="submit" class="btn btn-success" onclick="triggerExportAndRedirect()">Download Excel</button>
             </form>
         </div>
     </div>

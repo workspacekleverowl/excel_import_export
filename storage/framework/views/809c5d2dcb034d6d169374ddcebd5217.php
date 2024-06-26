@@ -30,6 +30,15 @@
                 collectFilteredData();
             });
         });
+
+
+        function triggerExportAndRedirect() {
+            
+            // Listen for the download to complete then redirect
+            setTimeout(() => {
+                window.location.href = '<?php echo e(route("indexexcel")); ?>';
+            }, 5000); // Adjust the timeout as needed
+        }
     </script>
     <style>
         .table-container {
@@ -154,7 +163,7 @@
             <form id="exportForm" action="<?php echo e(route('export-excel',$identifier)); ?>" method="POST">
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="exportData" id="exportData">
-                <button type="submit" class="btn btn-success">Download Excel</button>
+                <button type="submit" class="btn btn-success" onclick="triggerExportAndRedirect()">Download Excel</button>
             </form>
         </div>
     </div>
