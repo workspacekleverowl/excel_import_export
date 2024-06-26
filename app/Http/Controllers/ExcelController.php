@@ -105,7 +105,7 @@ class ExcelController extends Controller
         {
             $exportData = json_decode($request->input('exportData'), true);
 
-            try{
+          
             // Check if there's exported data
             if (!empty($exportData))
             {
@@ -116,10 +116,10 @@ class ExcelController extends Controller
             else {
                 return redirect()->back()->with('error', 'No data to export.');
             }
-            }
-            finally{
-            return redirect()->route('indexexcel');
-            }
+            
+           
+            //return redirect()->route('indexexcel');
+            
         }
 
     
